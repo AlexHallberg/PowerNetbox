@@ -25,7 +25,7 @@ function Set-NBDCIMDeviceBay {
         [uint64]$Device,
         [string]$Name,
         [string]$Label,
-        [uint64]$Installed_Device,
+        [Nullable[uint64]]$Installed_Device,
         [string]$Description,
         [string[]]$Tags,
         [hashtable]$Custom_Fields,
