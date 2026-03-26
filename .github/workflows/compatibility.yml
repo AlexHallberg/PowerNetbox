@@ -20,7 +20,7 @@ on:
       test_versions:
         description: 'Netbox versions to test (comma-separated)'
         required: false
-        default: '4.3.7,4.4.10,4.5.2'
+        default: '4.3.7,4.4.10,4.5.4'
         type: string
       include_beta:
         description: 'Include beta/pre-release versions'
@@ -31,6 +31,9 @@ on:
 env:
   NETBOX_TOKEN: "0123456789abcdef0123456789abcdef01234567"
   COMPOSE_PROJECT_NAME: "powernetbox"
+
+permissions:
+  contents: read
 
 jobs:
   # ============================================================
@@ -62,9 +65,9 @@ jobs:
           # - Token v2 with Bearer auth (#102)
           # - New: cable-profiles, authentication-check (#103, #105)
           # - New fields: VM.interface_count, Token.allowed_ips (#106)
-          # Docker 4.0.0: Granian web server, PostgreSQL 18, Valkey 9
-          - netbox: "v4.5.2-4.0.0"
-            netbox_short: "4.5.2"
+          # Docker 4.0.1: Granian web server, PostgreSQL 18, Valkey 9
+          - netbox: "v4.5.4-4.0.1"
+            netbox_short: "4.5.4"
             is_beta: false
             expected_failures: []
 
@@ -77,7 +80,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f  # v3
 
       - name: Start Netbox ${{ matrix.netbox_short }}
         run: |
@@ -153,6 +156,7 @@ jobs:
 
             if [ -n "$TOKEN_OUTPUT" ] && [[ "$TOKEN_OUTPUT" == nbt_* ]]; then
               echo "Created v2 token: ${TOKEN_OUTPUT:0:20}..."
+              echo "::add-mask::$TOKEN_OUTPUT"
               echo "token=$TOKEN_OUTPUT" >> $GITHUB_OUTPUT
               echo "auth_header=Bearer $TOKEN_OUTPUT" >> $GITHUB_OUTPUT
             else
@@ -455,11 +459,11 @@ jobs:
           echo "" >> compatibility-report.md
           echo "Generated: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> compatibility-report.md
           echo "" >> compatibility-report.md
-          echo "| Test | 4.3.7 | 4.4.10 | 4.5.2 |" >> compatibility-report.md
+          echo "| Test | 4.3.7 | 4.4.10 | 4.5.4 |" >> compatibility-report.md
           echo "|------|-------|--------|-------|" >> compatibility-report.md
 
           # Parse results from each version
-          for version in 4.3.7 4.4.10 4.5.2; do
+          for version in 4.3.7 4.4.10 4.5.4; do
             if [ -f "results/compatibility-$version/compatibility-results-$version.json" ]; then
               echo "Found results for $version"
               cat "results/compatibility-$version/compatibility-results-$version.json"

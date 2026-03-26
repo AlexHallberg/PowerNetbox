@@ -879,6 +879,26 @@ Describe "DCIM Additional Tests" -Tag 'DCIM' {
             $Result.Method | Should -Be 'PATCH'
             $Result.Uri | Should -Match '/api/dcim/device-bays/1/'
         }
+
+        It "Should accept null Installed_Device to depopulate bay" {
+            $Result = Set-NBDCIMDeviceBay -Id 1 -Installed_Device $null -Confirm:$false
+            $Result.Method | Should -Be 'PATCH'
+            $Result.Uri | Should -Match '/api/dcim/device-bays/1/'
+            $body = $Result.Body | ConvertFrom-Json
+            $body.installed_device | Should -BeNullOrEmpty
+        }
+
+        It "Should send null in JSON body when Installed_Device is null" {
+            $Result = Set-NBDCIMDeviceBay -Id 1 -Installed_Device $null -Confirm:$false
+            $Result.Body | Should -Match '"installed_device":\s*null'
+        }
+
+        It "Should accept uint64 Installed_Device to populate bay" {
+            $Result = Set-NBDCIMDeviceBay -Id 1 -Installed_Device 42 -Confirm:$false
+            $Result.Method | Should -Be 'PATCH'
+            $body = $Result.Body | ConvertFrom-Json
+            $body.installed_device | Should -Be 42
+        }
     }
 
     Context "Remove-NBDCIMDeviceBay" {

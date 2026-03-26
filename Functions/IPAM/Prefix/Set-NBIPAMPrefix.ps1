@@ -35,7 +35,10 @@ function Set-NBIPAMPrefix {
 
         [uint64]$Tenant,
 
-        [uint64]$Site,
+        [ValidateSet('dcim.region', 'dcim.sitegroup', 'dcim.site', 'dcim.location', IgnoreCase = $true)]
+        [string]$Scope_Type,
+
+        [uint64]$Scope_Id,
 
         [uint64]$VRF,
 
@@ -53,10 +56,17 @@ function Set-NBIPAMPrefix {
 
         [switch]$Force,
 
+
+        [object[]]$Tags,
+
         [switch]$Raw
     )
 
     process {
+        if ($PSBoundParameters.ContainsKey('Scope_Type') -xor $PSBoundParameters.ContainsKey('Scope_Id')) {
+            throw 'Parameters -Scope_Type and -Scope_Id must be used together.'
+        }
+
         foreach ($PrefixId in $Id) {
             $Segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes', $PrefixId))
 
