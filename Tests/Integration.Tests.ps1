@@ -1501,6 +1501,14 @@ Describe "Live Integration Tests" -Tag 'Integration', 'Live' -Skip:(-not $script
             $script:CreatedResources.Contacts.Remove($contact2.id)
         }
         It "Should find contact name using case-insensitive search" {
+            # Case-insensitive (__ie) query support requires Netbox 4.4+. On 4.3.x
+            # Set-NBQueryOption -IgnoreCase safely no-ops (warns), so an upper-cased
+            # search would not match -- skip rather than assert case-insensitivity.
+            $nbVersionString = (Get-NBVersion).'netbox-version'
+            if ($nbVersionString -notmatch '^\d+\.\d+' -or [version]($nbVersionString -replace '-.*$') -lt [version]'4.4.0') {
+                Set-ItResult -Skipped -Because 'Case-insensitive (__ie) query support requires Netbox 4.4+'
+                return
+            }
             $null = Set-NBQueryOption -IgnoreCase
             $contact = Get-NBContact -Name $script:TestContactName.ToUpper()
 
