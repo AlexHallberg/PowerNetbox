@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Creates one or more virtual machines in Netbox Virtualization module.
+    Creates one or more virtual machines in NetBox Virtualization module.
 
 .DESCRIPTION
-    Creates new virtual machines in Netbox. Supports both single VM
+    Creates new virtual machines in NetBox. Supports both single VM
     creation with individual parameters and bulk creation via pipeline input.
 
     For bulk operations, use the -BatchSize parameter to control how many
@@ -14,10 +14,10 @@
     The name of the virtual machine. Required for single VM creation.
 
 .PARAMETER Site
-    The site ID. Optional in Netbox 4.x.
+    The site ID. Optional in NetBox 4.x.
 
 .PARAMETER Cluster
-    The cluster ID. Optional - VMs can be standalone in Netbox 4.x.
+    The cluster ID. Optional - VMs can be standalone in NetBox 4.x.
 
 .PARAMETER Device
     The device ID to attach this VM to (NetBox 4.6+). Allows a clusterless,
@@ -26,11 +26,17 @@
 .PARAMETER Virtual_Machine_Type
     The virtual machine type ID (NetBox 4.6+).
 
+.PARAMETER Serial
+    Serial number of the VM.
+
 .PARAMETER Tenant
     The tenant ID.
 
 .PARAMETER Status
     Status of the VM. Defaults to 'Active'.
+
+.PARAMETER Description
+    Description of the VM.
 
 .PARAMETER Role
     The role ID for the VM.
@@ -60,7 +66,7 @@
     Comments about the VM.
 
 .PARAMETER Start_On_Boot
-    Boot behavior for the VM (Netbox 4.5+ only).
+    Boot behavior for the VM (NetBox 4.5+ only).
     Values: 'on', 'off', 'laststate'
 
 .PARAMETER InputObject
@@ -76,6 +82,9 @@
 
 .PARAMETER Raw
     Return the raw API response instead of the results array.
+
+.PARAMETER Tags
+    One or more tags to assign to this object (tag names or IDs).
 
 .EXAMPLE
     New-NBVirtualMachine -Name "webserver01" -Cluster 1 -vCPUs 4 -Memory 8192
@@ -128,11 +137,19 @@ function New-NBVirtualMachine {
         [uint64]$Virtual_Machine_Type,
 
         [Parameter(ParameterSetName = 'Single')]
+        [validatelength(0, 50)]
+        [string]$Serial,
+
+        [Parameter(ParameterSetName = 'Single')]
         [uint64]$Tenant,
 
         [Parameter(ParameterSetName = 'Single')]
         [ValidateSet('offline', 'active', 'planned', 'staged', 'failed', 'decommissioning', 'paused', IgnoreCase = $true)]
         [string]$Status = 'active',
+
+        [Parameter(ParameterSetName = 'Single')]
+        [validatelength(0, 200)]
+        [string]$Description,
 
         [Parameter(ParameterSetName = 'Single')]
         [uint64]$Role,

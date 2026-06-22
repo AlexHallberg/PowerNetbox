@@ -68,6 +68,22 @@ and authentication details, and worked examples are in the documentation:
 
 ---
 
+### Case sensitivity - insensitivity
+
+The NetBox API, by default, treats all query parameter values as case-sensitive. As PowerShell is [as case-insensitive as possible](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_case-sensitivity), the module offers an option to use case-insensitive query values.
+
+#### Activating case insensitive mode
+
+`Set-NBQueryOption -IgnoreCase:$true` or `Connect-NBAPI -IgnoreCase`.
+
+#### Requirements and limitations
+
+Depending on the version of the NetBox API used, the API supports this option for a specific set of parameters and endpoints. Due to this current limitation, the module can only support case insensitivity for the same set of cases.
+
+- Minimum version of Netbox API is 4.4+.
+- A list of parameters offered by each API version can be found in the repository. See [_IgnoreCaseParameters.ps1](./Functions/Helpers/_IgnoreCaseParameters.ps1).
+  Each parameter is paired with an exception list of endpoints. This means it is supported on all endpoints which are not part of the list.
+
 ## Requirements
 
 PowerShell **5.1** (Windows Desktop) or **7.0+** (Windows / macOS / Linux), and
