@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Updates one or more virtual machines in Netbox Virtualization module.
+    Updates one or more virtual machines in NetBox Virtualization module.
 
 .DESCRIPTION
-    Updates existing virtual machines in Netbox Virtualization module. Supports both
+    Updates existing virtual machines in NetBox Virtualization module. Supports both
     single VM updates with individual parameters and bulk updates via pipeline input.
 
     For bulk operations, use the -BatchSize parameter to control how many
@@ -27,8 +27,14 @@
 .PARAMETER Virtual_Machine_Type
     The virtual machine type ID (NetBox 4.6+). Pass $null to clear.
 
+.PARAMETER Serial
+    Serial number of the VM.
+
 .PARAMETER Status
     Status of the VM.
+
+.PARAMETER Description
+    Description of the VM.
 
 .PARAMETER Platform
     The platform ID.
@@ -58,7 +64,7 @@
     Hashtable of custom field values.
 
 .PARAMETER Start_On_Boot
-    Boot behavior for the VM (Netbox 4.5+ only).
+    Boot behavior for the VM (NetBox 4.5+ only).
     Values: 'on', 'off', 'laststate'
 
 .PARAMETER InputObject
@@ -131,8 +137,16 @@ function Set-NBVirtualMachine {
         [Nullable[uint64]]$Virtual_Machine_Type,
 
         [Parameter(ParameterSetName = 'Single')]
+        [validatelength(0, 50)]
+        [string]$Serial,
+
+        [Parameter(ParameterSetName = 'Single')]
         [ValidateSet('offline', 'active', 'planned', 'staged', 'failed', 'decommissioning', 'paused', IgnoreCase = $true)]
         [string]$Status,
+
+        [Parameter(ParameterSetName = 'Single')]
+        [validatelength(0, 200)]
+        [string]$Description,
 
         [Parameter(ParameterSetName = 'Single')]
         [uint64]$Platform,
